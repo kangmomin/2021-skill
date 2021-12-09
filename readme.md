@@ -4,5 +4,25 @@
     ```
     link = /post
     query = page int
+
     ex) /post?page=1
+    ```
+    
++ 계정 생성
+    ```
+    link = /sign-up
+    body = {
+        name      string
+	    id        string
+	    password  string
+	    studentId string
+    }
+    
+    ex) /sign-up
+        body {
+            name:      "example",
+            id:        "hello",
+            password:  "password",
+            studentId: "10101",
+        }
     ```
