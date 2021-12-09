@@ -10,5 +10,5 @@ func main() {
 
 	app.HandleFunc("/post", router.GetPost)
 
-	http.ListenAndServe(":3000", app)
+	http.ListenAndServe(":3101", app)
 }
