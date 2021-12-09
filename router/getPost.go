@@ -28,6 +28,11 @@ func GetPost(res http.ResponseWriter, req *http.Request) {
 
 	var posts []structure.DB
 
+	if err != nil {
+		res.WriteHeader(500)
+		fmt.Fprint(res, "error during get from db")
+	}
+
 	//append dataes to posts
 	for post.Next() {
 		var row structure.DB
@@ -36,9 +41,9 @@ func GetPost(res http.ResponseWriter, req *http.Request) {
 		posts = append(posts, row)
 	}
 
-	if err != nil || len(posts) < 1 {
+	if len(posts) < 1 {
 		res.WriteHeader(http.StatusNotFound)
-		fmt.Fprint(res, "error during get posts data or there are no posts")
+		fmt.Fprint(res, "there are no posts")
 		return
 	}
 
