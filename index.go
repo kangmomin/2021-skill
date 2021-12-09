@@ -6,7 +6,9 @@ import (
 )
 
 func main() {
-	mux := http.NewServeMux()
+	app := http.NewServeMux()
 
-	mux.HandleFunc("/post", router.GetPost)
+	app.HandleFunc("/post", router.GetPost)
+
+	http.ListenAndServe(":3000", app)
 }
