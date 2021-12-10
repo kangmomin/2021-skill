@@ -8,12 +8,21 @@ import (
 	"strconv"
 )
 
+func getPage(req *http.Request) (page string) {
+	//get queryString
+	queryString := req.URL.Query()
+
+	if len(queryString["page"]) < 1 {
+		return "1"
+	}
+
+	return queryString["page"][0]
+}
+
 func GetPost(res http.ResponseWriter, req *http.Request) {
 	db := conn.DB
 
-	//get queryString
-	queryString := req.URL.Query()
-	pageString := queryString["page"][0]
+	pageString := getPage(req)
 	page, err := strconv.Atoi(pageString)
 
 	//query pages info set
@@ -40,8 +49,7 @@ func GetPost(res http.ResponseWriter, req *http.Request) {
 	//append dataes to posts
 	for post.Next() {
 		var row structure.DB
-		err := post.Scan(&row.Id, &row.Title, &row.Description, &row.Good,
-			&row.Bad, &row.ReplyCount, &row.View, &row.Created)
+		err := post.Scan(&row.Id, &row.Title, &row.Description, &row.Good, &row.Bad, &row.ReplyCount, &row.View, &row.Created)
 		if err != nil {
 			panic(err.Error())
 		}
