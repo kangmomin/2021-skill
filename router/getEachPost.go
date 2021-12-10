@@ -19,7 +19,7 @@ func GetEachPost(res http.ResponseWriter, req *http.Request) {
 	postId := mux.Vars(req)["id"]
 
 	//get post's info
-	err := db.QueryRow("SELECT * FROM post WHERE id=?", postId).Scan(&post.Id, &post.Title, &post.Description, &post.Good, &post.Bad, &post.ReplyCount, &post.View, &post.Time)
+	err := db.QueryRow("SELECT * FROM post WHERE id=?", postId).Scan(&post.Id, &post.Title, &post.Description, &post.Good, &post.Bad, &post.ReplyCount, &post.View, &post.Time, &post.OwnerId)
 	if err != nil {
 		res.WriteHeader(http.StatusBadRequest)
 		fmt.Fprint(res, "error")

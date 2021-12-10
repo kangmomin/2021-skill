@@ -12,4 +12,5 @@ type DB struct {
 	View        int       `json:"view"`
 	Time        time.Time `json:"time"`
 	Created     string    `json:"created"`
+	OwnerId     int       `json:"ownerId"`
 }
