@@ -10,5 +10,6 @@ type DB struct {
 	Bad         int       `json:"bad"`
 	ReplyCount  int       `json:"replyCount"`
 	View        int       `json:"view"`
-	Created     time.Time `json:"created"`
+	Time        time.Time `json:"time"`
+	Created     string    `json:"created"`
 }
