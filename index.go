@@ -11,6 +11,8 @@ import (
 func main() {
 	app := mux.NewRouter()
 
+	app.Use(router.SetHeader)
+
 	app.HandleFunc("/post", router.GetPost).Methods("GET")
 
 	app.HandleFunc("/sign-up", account.SignUp).Methods("POST")
