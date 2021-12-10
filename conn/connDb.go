@@ -20,7 +20,7 @@ var DB = connectDb()
 
 func connectDb() (db *sql.DB) {
 	config := getConfig()
-	db, err := sql.Open(config.Driver, config.User+":"+config.Password+"@/"+config.Database)
+	db, err := sql.Open(config.Driver, config.User+":"+config.Password+"@/"+config.Database+"?parseTime=true")
 
 	if err != nil {
 		panic(err.Error())
