@@ -23,6 +23,7 @@ func SignUp(res http.ResponseWriter, req *http.Request) {
 	body := post{}
 	err := json.NewDecoder(req.Body).Decode(&body)
 	if err != nil {
+		fmt.Println(err)
 		res.WriteHeader(http.StatusMethodNotAllowed)
 		fmt.Fprint(res, "error in body data")
 		return
@@ -48,7 +49,7 @@ func SignUp(res http.ResponseWriter, req *http.Request) {
 	//중복 체크
 	for rows.Next() {
 		row := structure.Account{}
-		rows.Scan(&row.Name, &row.AccountId, &row.StudentId)
+		rows.Scan(&row.AccountId, &row.Name, &row.StudentId)
 
 		if row.Name == body.Name || row.AccountId == body.AccountId || strconv.Itoa(row.StudentId) == body.StudentId {
 			res.WriteHeader(http.StatusBadRequest)
