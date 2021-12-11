@@ -23,6 +23,7 @@ func main() {
 
 	//account overlap checker
 	app.HandleFunc("/overlap-check/id", account.IdOverLap).Methods("POST")
+	app.HandleFunc("/overlap-check/student-id", account.StuendtIdOverLap).Methods("POST")
 
 	http.ListenAndServe(":3101", app)
 }

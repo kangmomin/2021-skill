@@ -110,16 +110,33 @@
 + 중복 확인
     * 아이디
         ```
-        method: GET
+        method: POST
         link: /overlap-check/id
         body: {
-            id int
+            id string
         }
         return: boolean
         
         ex) /overlap-check/id
             body: {
                 id: "example"
+            }
+            
+            return = false
+        ```
+
+    * 학번
+        ```
+        method: POST
+        link: /overlap-check/student-id
+        body: {
+            studentId int
+        }
+        return: boolean
+        
+        ex) /overlap-check/student-id
+            body: {
+                id: 10101
             }
             
             return = false
