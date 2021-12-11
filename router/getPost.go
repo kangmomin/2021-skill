@@ -90,7 +90,6 @@ func GetPost(res http.ResponseWriter, req *http.Request) {
 		panic(err)
 	}
 
-	res.Header().Set("Content-Type", "application/json") //res type json set
 	res.WriteHeader(200)
 	fmt.Fprint(res, string(postJson))
 }
