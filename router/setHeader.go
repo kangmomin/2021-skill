@@ -13,10 +13,11 @@ func SetHeader(next http.Handler) http.Handler {
 		for i := 0; i < len(keys); i++ {
 			strkeys[i] = keys[i].String()
 		}
-		headres := strings.Join(strkeys, ",") + ", X-Naver-Client-Id,X-Naver-Client-Secret,X-TARGET-URL"
+		headres := strings.Join(strkeys, ",") + ", X-Naver-Client-Id,X-Naver-Client-Secret,X-TARGET-URL,Content-Type"
 
 		res.Header().Set("Access-Control-Allow-Origin", "*")
 		res.Header().Set("Access-Control-Allow-Methods", "*")
+		res.Header().Set("Content-Type", "application/json") //res type json set
 		res.Header().Set("Access-Control-Allow-Headers", headres)
 		next.ServeHTTP(res, req)
 	})
