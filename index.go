@@ -21,5 +21,8 @@ func main() {
 	app.HandleFunc("/sign-up", account.SignUp).Methods("POST")
 	app.HandleFunc("/login", account.Login).Methods("POST")
 
+	//account overlap checker
+	app.HandleFunc("/overlap-check/id", account.IdOverLap).Methods("POST")
+
 	http.ListenAndServe(":3101", app)
 }
