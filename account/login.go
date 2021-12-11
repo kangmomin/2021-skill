@@ -15,31 +15,37 @@ import (
 )
 
 type resStruct struct {
-	userId int
+	userId  int
+	Message string
+	err     bool
 }
 
 func Login(res http.ResponseWriter, req *http.Request) {
+	var resValue resStruct
 	var body structure.Account
 	err := json.NewDecoder(req.Body).Decode(&body)
 
 	if err != nil {
 		fmt.Println(err)
 		res.WriteHeader(http.StatusBadRequest)
-		fmt.Fprint(res, "error in body data")
+		resValue.err = true
+		resValue.Message = "error in body data"
+		fmt.Fprint(res, resValue)
 		return
 	}
 
 	db := conn.DB
 	var accountPassword, encryptedPassword, random string //인증 관련 변수들
 	var userId int
-	var resValue resStruct
 
 	err = db.QueryRow("SELECT random, accountPassword, id FROM account WHERE accountId=?", body.AccountId).Scan(&random, &accountPassword, &userId)
 
 	if err != nil {
 		fmt.Println(err)
 		res.WriteHeader(400)
-		fmt.Fprint(res, "id is wrong")
+		resValue.err = true
+		resValue.Message = "id is wrong"
+		fmt.Fprint(res, resValue)
 		return
 	}
 
@@ -54,7 +60,9 @@ func Login(res http.ResponseWriter, req *http.Request) {
 	//암호화 되어있는 두 값을 비교
 	if encryptedPassword != accountPassword {
 		res.WriteHeader(400)
-		fmt.Fprint(res, "password is wrong")
+		resValue.err = true
+		resValue.Message = "password is wrong"
+		fmt.Fprint(res, resValue)
 		return
 	}
 
@@ -64,12 +72,16 @@ func Login(res http.ResponseWriter, req *http.Request) {
 	if err != nil {
 		fmt.Println(err)
 		res.WriteHeader(500)
-		fmt.Fprint(res, "session error")
+		resValue.err = true
+		resValue.Message = "session error"
+		fmt.Fprint(res, resValue)
 		return
 	}
 
 	store.Set("id", userId) //session에 유저의 id값을 넣음.
 
 	res.WriteHeader(200)
+	resValue.err = false
+	resValue.Message = "login success"
 	fmt.Fprint(res, resValue)
 }
