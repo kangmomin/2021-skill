@@ -68,9 +68,10 @@ func GetPost(res http.ResponseWriter, req *http.Request) {
 	//append dataes to posts
 	for post.Next() {
 		var row structure.DB
-		err := post.Scan(&row.Id, &row.Title, &row.Description, &row.Good, &row.Bad, &row.ReplyCount, &row.View, &row.Time)
+		err := post.Scan(&row.Id, &row.Title, &row.Description, &row.Good, &row.Bad, &row.ReplyCount, &row.View, &row.Time, &row.OwnerId)
 		if err != nil {
-			panic(err.Error())
+			fmt.Println(err)
+			return
 		}
 		row.Created = row.Time.Format("06-01-02 15:04")
 		posts.Data = append(posts.Data, row)
