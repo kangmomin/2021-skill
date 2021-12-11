@@ -3,12 +3,14 @@ package account
 import (
 	"2021skill/conn"
 	"2021skill/structure"
-	"crypto/sha512"
+	"encoding/hex"
 	"encoding/json"
 	"fmt"
 	"math/rand"
 	"net/http"
 	"strconv"
+
+	"golang.org/x/crypto/argon2"
 )
 
 type post struct {
@@ -61,13 +63,14 @@ func SignUp(res http.ResponseWriter, req *http.Request) {
 	}
 
 	//password encrypting
-	randomKey := strconv.Itoa(rand.Int() * 35)
-	encryptedPwd := sha512.Sum512([]byte(body.Password + randomKey))
-	body.Password = string(encryptedPwd[:])
+	randomKey, _ := generateRandomBytes(structure.EncryptConfig.SaltLength) //salt
+	encryptedPwd := argon2.IDKey([]byte(body.Password), randomKey, structure.EncryptConfig.Iterations,
+		structure.EncryptConfig.Memory, structure.EncryptConfig.Parallelism, structure.EncryptConfig.KeyLength)
+	body.Password = hex.EncodeToString(encryptedPwd)
 
 	//db에 계정 추가
 	userInfo, err := db.Exec("INSERT INTO account (name, accountId, accountPassword, studentId, random) VALUES (?, ?, ?, ?, ?)",
-		body.Name, body.AccountId, body.Password, body.StudentId, randomKey)
+		body.Name, body.AccountId, body.Password, body.StudentId, hex.EncodeToString(randomKey))
 	if err != nil {
 		res.WriteHeader(400)
 		fmt.Fprint(res, "error during inserting")
@@ -80,4 +83,14 @@ func SignUp(res http.ResponseWriter, req *http.Request) {
 
 	res.WriteHeader(http.StatusCreated)
 	fmt.Fprint(res, strconv.FormatInt(insertedID, 10))
+}
+
+func generateRandomBytes(n uint32) ([]byte, error) {
+	b := make([]byte, n)
+	_, err := rand.Read(b)
+	if err != nil {
+		return nil, err
+	}
+
+	return b, nil
 }
