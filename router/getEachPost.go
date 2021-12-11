@@ -22,7 +22,7 @@ func GetEachPost(res http.ResponseWriter, req *http.Request) {
 	err := db.QueryRow("SELECT * FROM post WHERE id=?", postId).Scan(&post.Id, &post.Title, &post.Description, &post.Good, &post.Bad, &post.ReplyCount, &post.View, &post.Time, &post.OwnerId)
 	if err != nil {
 		res.WriteHeader(http.StatusBadRequest)
-		fmt.Fprint(res, "error")
+		fmt.Fprint(res, "error during get post's info")
 		return
 	}
 
@@ -40,7 +40,6 @@ func GetEachPost(res http.ResponseWriter, req *http.Request) {
 		fmt.Println(err)
 	}
 
-	res.Header().Set("Content-Type", "application/json") //res type json set
 	res.WriteHeader(200)
 	fmt.Fprint(res, string(byteDB))
 }
