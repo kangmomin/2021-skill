@@ -3,8 +3,10 @@ package account
 import (
 	"2021skill/conn"
 	"2021skill/structure"
+	"crypto/sha512"
 	"encoding/json"
 	"fmt"
+	"math/rand"
 	"net/http"
 	"strconv"
 )
@@ -58,9 +60,14 @@ func SignUp(res http.ResponseWriter, req *http.Request) {
 		}
 	}
 
+	//password encrypting
+	randomKey := strconv.Itoa(rand.Int() * 35)
+	encryptedPwd := sha512.Sum512([]byte(body.Password + randomKey))
+	body.Password = string(encryptedPwd[:])
+
 	//db에 계정 추가
-	userInfo, err := db.Exec("INSERT INTO account (name, accountId, accountPassword, studentId) VALUES (?, ?, ?, ?)",
-		body.Name, body.AccountId, body.Password, body.StudentId)
+	userInfo, err := db.Exec("INSERT INTO account (name, accountId, accountPassword, studentId, random) VALUES (?, ?, ?, ?, ?)",
+		body.Name, body.AccountId, body.Password, body.StudentId, randomKey)
 	if err != nil {
 		res.WriteHeader(400)
 		fmt.Fprint(res, "error during inserting")
