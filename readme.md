@@ -18,6 +18,16 @@
     ex) /post/12
     ```
     
++ 로그인
+    ```
+    method: POST
+    link: /login
+    body: {
+        accountId       string //계정 아이디
+        accountPassword string //계정 비밀번호
+    }
+    ```
+    
 + 계정 생성
     ```
     method: POST
