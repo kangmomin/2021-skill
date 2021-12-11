@@ -15,9 +15,9 @@ import (
 )
 
 type resStruct struct {
-	userId  int
-	Message string
-	err     bool
+	UserId  int    `json:"userId"`
+	Message string `json:"message"`
+	Err     bool   `json:"err"`
 }
 
 func Login(res http.ResponseWriter, req *http.Request) {
@@ -27,10 +27,12 @@ func Login(res http.ResponseWriter, req *http.Request) {
 
 	if err != nil {
 		fmt.Println(err)
+		fmt.Println(req.Body)
 		res.WriteHeader(http.StatusBadRequest)
-		resValue.err = true
+		resValue.Err = true
 		resValue.Message = "error in body data"
-		fmt.Fprint(res, resValue)
+		resJson, _ := json.Marshal(resValue)
+		fmt.Fprint(res, string(resJson))
 		return
 	}
 
@@ -43,13 +45,14 @@ func Login(res http.ResponseWriter, req *http.Request) {
 	if err != nil {
 		fmt.Println(err)
 		res.WriteHeader(400)
-		resValue.err = true
+		resValue.Err = true
 		resValue.Message = "id is wrong"
-		fmt.Fprint(res, resValue)
+		resJson, _ := json.Marshal(resValue)
+		fmt.Fprint(res, string(resJson))
 		return
 	}
 
-	resValue.userId = userId
+	resValue.UserId = userId
 
 	//body로 넘어온 password 암호화
 	salt, _ := hex.DecodeString(random) //db에 저장하기 위해 encode했던 string을 byte로 decode
@@ -60,9 +63,10 @@ func Login(res http.ResponseWriter, req *http.Request) {
 	//암호화 되어있는 두 값을 비교
 	if encryptedPassword != accountPassword {
 		res.WriteHeader(400)
-		resValue.err = true
+		resValue.Err = true
 		resValue.Message = "password is wrong"
-		fmt.Fprint(res, resValue)
+		resJson, _ := json.Marshal(resValue)
+		fmt.Fprint(res, string(resJson))
 		return
 	}
 
@@ -72,16 +76,22 @@ func Login(res http.ResponseWriter, req *http.Request) {
 	if err != nil {
 		fmt.Println(err)
 		res.WriteHeader(500)
-		resValue.err = true
+		resValue.Err = true
 		resValue.Message = "session error"
-		fmt.Fprint(res, resValue)
+		resJson, _ := json.Marshal(resValue)
+		fmt.Fprint(res, string(resJson))
 		return
 	}
 
 	store.Set("id", userId) //session에 유저의 id값을 넣음.
 
 	res.WriteHeader(200)
-	resValue.err = false
+	resValue.Err = false
 	resValue.Message = "login success"
-	fmt.Fprint(res, resValue)
+	resJson, _ := json.Marshal(resValue)
+	if err != nil {
+		panic(err)
+	}
+
+	fmt.Fprint(res, string(resJson))
 }
