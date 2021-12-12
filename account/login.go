@@ -3,15 +3,12 @@ package account
 import (
 	"2021skill/conn"
 	"2021skill/structure"
-	"context"
 	"encoding/hex"
 	"encoding/json"
 	"fmt"
 	"net/http"
 
 	"golang.org/x/crypto/argon2"
-
-	session "github.com/go-session/session/v3"
 )
 
 type resStruct struct {
@@ -71,7 +68,7 @@ func Login(res http.ResponseWriter, req *http.Request) {
 	}
 
 	//로그인 성공시 해당 계정의 session cookie생성
-	store, err := session.Start(context.Background(), res, req)
+	// store, err := session.Start(context.Background(), res, req)
 
 	if err != nil {
 		fmt.Println(err)
@@ -83,7 +80,8 @@ func Login(res http.ResponseWriter, req *http.Request) {
 		return
 	}
 
-	store.Set("id", userId) //session에 유저의 id값을 넣음.
+	// store.Set("id", userId) //session에 유저의 id값을 넣음.
+	// store.Save()
 
 	res.WriteHeader(200)
 	resValue.Err = false
@@ -92,6 +90,19 @@ func Login(res http.ResponseWriter, req *http.Request) {
 	if err != nil {
 		panic(err)
 	}
+
+	sessionId := &http.Cookie{
+		Name: "go_sessionId",
+		// Value:    store.SessionID(),
+		Value:    "store.SessionID()",
+		SameSite: http.SameSiteNoneMode,
+		HttpOnly: true,
+	}
+
+	// res.Header().Set("Set-Cookie", sessionId.String())
+	http.SetCookie(res, sessionId)
+	req.AddCookie(sessionId)
+	res.WriteHeader(200)
 
 	fmt.Fprint(res, string(resJson))
 }
