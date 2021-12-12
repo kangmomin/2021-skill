@@ -15,7 +15,8 @@ func SetHeader(next http.Handler) http.Handler {
 		}
 		headres := strings.Join(strkeys, ",") + ", X-Naver-Client-Id,X-Naver-Client-Secret,X-TARGET-URL,Content-Type"
 
-		res.Header().Set("Access-Control-Allow-Origin", "*")
+		res.Header().Set("Access-Control-Allow-Origin", "http://localhost:5000")
+		res.Header().Set("Access-Control-Allow-Credentials", "true")
 		res.Header().Set("Access-Control-Allow-Methods", "*")
 		res.Header().Set("Content-Type", "application/json") //res type json set
 		res.Header().Set("Access-Control-Allow-Headers", headres)
