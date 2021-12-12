@@ -93,5 +93,5 @@ func Login(res http.ResponseWriter, req *http.Request) {
 
 	resValue.Err = false
 	res.WriteHeader(200)
-	fmt.Fprint(res, resJson)
+	fmt.Fprint(res, string(resJson))
 }
