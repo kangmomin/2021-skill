@@ -7,7 +7,10 @@ require (
 	github.com/gorilla/mux v1.8.0
 )
 
-require golang.org/x/sys v0.0.0-20210615035016-665e8c7367d1 // indirect
+require (
+	github.com/lemon-mint/vbox v1.2.0 // indirect
+	golang.org/x/sys v0.0.0-20211210111614-af8b64212486 // indirect
+)
 
 require (
 	github.com/go-session/session/v3 v3.1.5 // indirect

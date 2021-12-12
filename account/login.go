@@ -6,14 +6,19 @@ import (
 	"encoding/hex"
 	"encoding/json"
 	"fmt"
+	"io/ioutil"
 	"net/http"
+	"os"
+	"strconv"
 
+	"github.com/lemon-mint/vbox"
 	"golang.org/x/crypto/argon2"
 )
 
 type resStruct struct {
 	UserId  int    `json:"userId"`
 	Message string `json:"message"`
+	Token   string `json:"tocken"`
 	Err     bool   `json:"err"`
 }
 
@@ -67,42 +72,26 @@ func Login(res http.ResponseWriter, req *http.Request) {
 		return
 	}
 
-	//로그인 성공시 해당 계정의 session cookie생성
-	// store, err := session.Start(context.Background(), res, req)
+	//현재 key
+	keyFile, err := os.Open("config/accessKey.txt")
 
 	if err != nil {
-		fmt.Println(err)
-		res.WriteHeader(500)
 		resValue.Err = true
-		resValue.Message = "session error"
-		resJson, _ := json.Marshal(resValue)
-		fmt.Fprint(res, string(resJson))
-		return
+		res.WriteHeader(400)
+		fmt.Println("error during get accessKey config file")
+		fmt.Println(err)
 	}
+	key, _ := ioutil.ReadFile(keyFile.Name())
 
-	// store.Set("id", userId) //session에 유저의 id값을 넣음.
-	// store.Save()
+	aesKey := vbox.NewBlackBox(key) //aes 암호화 key
 
-	res.WriteHeader(200)
-	resValue.Err = false
+	//data encrypt
+	auth := aesKey.Seal([]byte(strconv.Itoa(userId)))
 	resValue.Message = "login success"
-	resJson, _ := json.Marshal(resValue)
-	if err != nil {
-		panic(err)
-	}
+	resValue.Token = hex.EncodeToString(auth)
+	resJson, _ := json.Marshal(resValue) //object to json
 
-	sessionId := &http.Cookie{
-		Name: "go_sessionId",
-		// Value:    store.SessionID(),
-		Value:    "store.SessionID()",
-		SameSite: http.SameSiteNoneMode,
-		HttpOnly: true,
-	}
-
-	// res.Header().Set("Set-Cookie", sessionId.String())
-	http.SetCookie(res, sessionId)
-	req.AddCookie(sessionId)
+	resValue.Err = false
 	res.WriteHeader(200)
-
-	fmt.Fprint(res, string(resJson))
+	fmt.Fprint(res, resJson)
 }
