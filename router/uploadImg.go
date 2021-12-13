@@ -1,6 +1,7 @@
 package router
 
 import (
+	"encoding/json"
 	"fmt"
 	"io/ioutil"
 	"net/http"
@@ -8,12 +9,19 @@ import (
 	"time"
 )
 
+type resValue struct {
+	ImgPath string `json:"imgPath"`
+	Message string `json:"message"`
+	Err     bool   `json:"error"`
+}
+
 func UploadImg(res http.ResponseWriter, req *http.Request) {
 	//폼 파일 포맷의 image를 가져옴
 	//header에는 img의 정보 img는 그냥 img만
 	img, imgHeader, err := req.FormFile("image")
 
 	if err != nil {
+		fmt.Println("err in uploadImg.go 24")
 		fmt.Println(err)
 		res.WriteHeader(400)
 		fmt.Fprint(res, "error during get image data")
@@ -38,5 +46,13 @@ func UploadImg(res http.ResponseWriter, req *http.Request) {
 		return
 	}
 
-	fmt.Fprint(res, imgName)
+	resValue := resValue{
+		ImgPath: imgName,
+		Message: "success",
+		Err:     false,
+	}
+
+	resJson, _ := json.Marshal(resValue)
+
+	fmt.Fprint(res, string(resJson))
 }
