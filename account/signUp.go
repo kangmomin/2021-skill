@@ -18,6 +18,7 @@ type post struct {
 	AccountId string `json:"id"`
 	Password  string `json:"password"`
 	StudentId string `json:"studentId"`
+	AuthImg   string `json:"authImg"`
 }
 
 func SignUp(res http.ResponseWriter, req *http.Request) {
@@ -34,7 +35,7 @@ func SignUp(res http.ResponseWriter, req *http.Request) {
 	}
 
 	//빈칸 체크
-	if len(body.AccountId) < 1 || len(body.Name) < 1 || len(body.Password) < 1 || len(body.StudentId) < 1 {
+	if len(body.AccountId) < 1 || len(body.Name) < 1 || len(body.Password) < 1 || len(body.StudentId) < 1 || len(body.AuthImg) < 1 {
 		res.WriteHeader(http.StatusMethodNotAllowed)
 		fmt.Fprint(res, "empty value")
 		return
@@ -69,8 +70,8 @@ func SignUp(res http.ResponseWriter, req *http.Request) {
 	body.Password = hex.EncodeToString(encryptedPwd)
 
 	//db에 계정 추가
-	userInfo, err := db.Exec("INSERT INTO account (name, accountId, accountPassword, studentId, random) VALUES (?, ?, ?, ?, ?)",
-		body.Name, body.AccountId, body.Password, body.StudentId, hex.EncodeToString(randomKey))
+	userInfo, err := db.Exec("INSERT INTO account (name, accountId, accountPassword, studentId, random, authImg) VALUES (?, ?, ?, ?, ?, ?)",
+		body.Name, body.AccountId, body.Password, body.StudentId, hex.EncodeToString(randomKey), body.AuthImg)
 	if err != nil {
 		res.WriteHeader(400)
 		fmt.Fprint(res, "error during inserting")
