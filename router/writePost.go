@@ -35,11 +35,10 @@ func WritePost(res http.ResponseWriter, req *http.Request) {
 	}
 
 	//if description or title is null
-	if len(body.Description) < 1 || len(body.Title) < 1 {
+	if len(body.Description) < 1 || len(body.Title) < 1 || len(body.Title) > 30 {
 		res.WriteHeader(http.StatusMethodNotAllowed)
 		fmt.Fprint(res, "some value is null")
 		return
-
 	}
 
 	//get key form config folder
