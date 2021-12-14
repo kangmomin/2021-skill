@@ -49,8 +49,8 @@ func GetEachPost(res http.ResponseWriter, req *http.Request) {
 	}
 
 	//check is owner
-	post.IsOwner = true
-	if userId, _ := strconv.Atoi(hex.EncodeToString(userId)); userId == post.OwnerId {
+	post.IsOwner = false
+	if userId := string(userId); userId == strconv.Itoa(post.OwnerId) {
 		post.IsOwner = true
 	}
 
