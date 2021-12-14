@@ -2,6 +2,7 @@ package router
 
 import (
 	"2021skill/conn"
+	"encoding/hex"
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
@@ -20,14 +21,20 @@ type writePostBody struct {
 func WritePost(res http.ResponseWriter, req *http.Request) {
 	//get body data
 	var body writePostBody
-	json.NewDecoder(req.Body).Decode(&body)
+	err := json.NewDecoder(req.Body).Decode(&body)
 
+	if err != nil {
+		fmt.Println(err)
+	}
+
+	//if body don't have tocken == user wasn't login
 	if len(body.Tocken) < 1 {
 		res.WriteHeader(http.StatusForbidden)
 		fmt.Fprint(res, "need Login")
 		return
 	}
 
+	//if description or title is null
 	if len(body.Description) < 1 || len(body.Title) < 1 {
 		res.WriteHeader(http.StatusMethodNotAllowed)
 		fmt.Fprint(res, "some value is null")
@@ -41,14 +48,23 @@ func WritePost(res http.ResponseWriter, req *http.Request) {
 
 	//decode userInfo
 	auth := vbox.NewBlackBox(key)
-	byteUserId, _ := auth.Open([]byte(body.Tocken))
-	userId, _ := json.Marshal(byteUserId)
+	decodedTocken, _ := hex.DecodeString(body.Tocken)
+	userId, boolean := auth.Open(decodedTocken)
 
+	if err != nil || !boolean {
+		fmt.Println(req.Cookies())
+		fmt.Printf("error during decode tocken \n %s", err)
+		res.WriteHeader(400)
+		fmt.Fprint(res, "error during decode tocken")
+		return
+	}
+
+	//insert post
 	db := conn.DB
-	_, err := db.Exec("INSERT INFO post (title, description, ownerId) VALUES (?, ?, ?)", body.Title, body.Description, userId)
+	_, err = db.Exec("INSERT INTO post (title, description, ownerId) VALUES (?, ?, ?)", body.Title, body.Description, userId)
 
 	if err != nil {
-		fmt.Printf("error writePost.go 44 \n %s", err)
+		fmt.Printf("error during insert post \n %s", err)
 		res.WriteHeader(400)
 		fmt.Fprint(res, "error during insert post")
 		return
