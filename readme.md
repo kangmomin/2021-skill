@@ -4,7 +4,7 @@
     ```
     method: GET
     link: /post
-    query: page int
+    query: page int, sort string
     
     return = errorMessage string || [{
         id          int
@@ -141,3 +141,47 @@
             
             return = false
         ```
+
++ 이미지 업로드
+    ```
+    method: POST
+    link: /upload
+    body: formData()
+    return: {
+        error   bool
+        message string
+        imgPath string
+    }
+    
+    ex) /upload
+        body: {
+            image: formData()
+        }
+        
+        return = {
+            error: true,
+            message: "error during upload",
+            imgPath: ""
+        }
+    ```
+
++ 글 작성
+    ```
+    method: POST
+    link: /post
+    body: {
+        title       string
+	    description string
+	    tocken      string
+    }
+    return: errorMsg string || "success"
+    
+    ex) /sign-up
+        body {
+            title:       "hello World"
+    	    description: "hello World" 
+    	    tocken:      tocken
+        }
+        
+        return = "error" || "success"
+    ```
