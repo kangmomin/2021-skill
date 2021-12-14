@@ -33,7 +33,7 @@ func GetPost(res http.ResponseWriter, req *http.Request) {
 	page, err := strconv.Atoi(pageString)
 
 	//query pages info set
-	page -= 1 //each page's count
+	page = (page - 1) * 30 //each page's count
 	eachPostConunt := 30
 
 	//만약 queryString에 page값이 없으면 page를 0으로 셋
@@ -58,7 +58,7 @@ func GetPost(res http.ResponseWriter, req *http.Request) {
 
 	//조건에 맞는 패이지의 수
 	var allPosts, lastPage int
-	db.QueryRow("SELECT COUNT(*) FROM post LIMIT " + strconv.Itoa(page) + ", " + strconv.Itoa(eachPostConunt) + ";").Scan(&allPosts)
+	db.QueryRow("SELECT COUNT(*) FROM post;").Scan(&allPosts)
 
 	lastPage = allPosts / eachPostConunt
 	if (allPosts % eachPostConunt) != 0 {
