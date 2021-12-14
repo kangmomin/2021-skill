@@ -41,7 +41,8 @@ func DeletePost(res http.ResponseWriter, req *http.Request) {
 	decodeTocken, err := hex.DecodeString(body.Tocken)
 
 	userId, _error := auth.Open(decodeTocken)
-	if _error || err != nil {
+	if !_error || err != nil {
+		fmt.Println(err)
 		res.WriteHeader(http.StatusForbidden)
 		fmt.Fprint(res, "tocken was brocken")
 		return
@@ -52,13 +53,13 @@ func DeletePost(res http.ResponseWriter, req *http.Request) {
 	var postOwnerId int
 	db.QueryRow("SELECT ownerId FROM post WHERE id=?", postId[0]).Scan(&postOwnerId)
 
-	if userId, _ := strconv.Atoi(hex.EncodeToString(userId)); postOwnerId != userId {
+	if userId, _ := strconv.Atoi(string(userId)); postOwnerId != userId {
 		res.WriteHeader(http.StatusUnauthorized)
 		fmt.Fprint(res, "not a user's post")
 		return
 	}
 
-	_, err = db.Exec("DELETE FROM post WHERE id=?", postId)
+	_, err = db.Exec("DELETE FROM post WHERE id=?", postId[0])
 	if err != nil {
 		res.WriteHeader(400)
 		fmt.Fprint(res, "error during deleting")
