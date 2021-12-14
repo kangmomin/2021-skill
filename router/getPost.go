@@ -52,7 +52,6 @@ func GetPost(res http.ResponseWriter, req *http.Request) {
 
 	//30개의 값을 꺼내옴
 	query := "SELECT * FROM post ORDER BY " + sortType + " LIMIT " + strconv.Itoa(page) + ", " + strconv.Itoa(eachPostConunt) + ";"
-	fmt.Println(query)
 	post, err := db.Query(query)
 
 	var posts resJson //result 변수
