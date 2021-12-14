@@ -29,5 +29,5 @@ func main() {
 	//image upload
 	app.HandleFunc("/upload", router.UploadImg).Methods("POST")
 
-	http.ListenAndServe(":3101", app)
+	http.ListenAndServeTLS(":80", "certificate.crt", "private.key", app)
 }

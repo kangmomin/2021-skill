@@ -2,3 +2,6 @@ config/db.json
 .vscode/launch.json
 config/accessKey.txt
 public/
+ca_bundle.crt
+private.key
+certificate.crt
