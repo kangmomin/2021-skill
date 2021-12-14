@@ -15,7 +15,7 @@ func main() {
 
 	//post
 	app.HandleFunc("/post", router.GetPost).Methods("GET")
-	app.HandleFunc("/post/{id}", router.GetEachPost).Methods("GET")
+	app.HandleFunc("/post/{id}", router.GetEachPost).Methods("POST")
 	app.HandleFunc("/post", router.WritePost).Methods("POST")
 
 	//account

@@ -14,4 +14,5 @@ type DB struct {
 	Created     string    `json:"created"`
 	OwnerId     int       `json:"ownerId"`
 	AuthImg     string    `json:"authImg"`
+	IsOwner     bool      `json:"isOwner"`
 }
