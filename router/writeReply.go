@@ -16,7 +16,7 @@ import (
 type writeReplyBody struct {
 	Tocken      string `json:"tocken"`
 	Description string `json:"description"`
-	PostId      int    `json:"postId"`
+	PostId      string `json:"postId"`
 }
 
 func WriteReply(res http.ResponseWriter, req *http.Request) {
@@ -46,6 +46,11 @@ func WriteReply(res http.ResponseWriter, req *http.Request) {
 	db := conn.DB
 
 	body.Description = strings.ReplaceAll(body.Description, "script", "")
+	if len(body.Description) < 1 {
+		res.WriteHeader(http.StatusBadRequest)
+		fmt.Fprint(res, "description is null")
+		return
+	}
 	_, err = db.Exec("INSERT INTO reply (ownerId, description, postId) VALUES (?, ?, ?)", userId, body.Description, body.PostId)
 
 	if err != nil {
