@@ -51,8 +51,15 @@ func WriteReply(res http.ResponseWriter, req *http.Request) {
 		fmt.Fprint(res, "description is null")
 		return
 	}
-	_, err = db.Exec("INSERT INTO reply (ownerId, description, postId) VALUES (?, ?, ?)", userId, body.Description, body.PostId)
 
+	_, err = db.Exec("UPDATE post SET replyCount=replyCount+1 WHERE postId=?", body.PostId)
+	if err != nil {
+		res.WriteHeader(400)
+		fmt.Println("error during inserting")
+		return
+	}
+
+	_, err = db.Exec("INSERT INTO reply (ownerId, description, postId) VALUES (?, ?, ?)", userId, body.Description, body.PostId)
 	if err != nil {
 		res.WriteHeader(400)
 		fmt.Println("error during inserting")
