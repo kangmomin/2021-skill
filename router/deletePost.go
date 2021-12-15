@@ -66,6 +66,20 @@ func DeletePost(res http.ResponseWriter, req *http.Request) {
 		return
 	}
 
+	_, err = db.Exec("DELETE FROM reply WHERE postId=?", postId[0])
+	if err != nil {
+		res.WriteHeader(400)
+		fmt.Fprint(res, "error during deleting")
+		return
+	}
+
+	_, err = db.Exec("DELETE FROM good WHERE postId=?", postId[0])
+	if err != nil {
+		res.WriteHeader(400)
+		fmt.Fprint(res, "error during deleting")
+		return
+	}
+
 	res.WriteHeader(200)
 	fmt.Fprint(res, "success")
 }
