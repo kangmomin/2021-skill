@@ -59,6 +59,13 @@ func AddGood(res http.ResponseWriter, req *http.Request) {
 		return
 	}
 
+	_, err = db.Exec("UPDATE post SET good=good+1 WHERE postId=?", postId)
+	if err != nil {
+		res.WriteHeader(http.StatusBadRequest)
+		fmt.Fprint(res, "error during inerting")
+		return
+	}
+
 	res.WriteHeader(http.StatusCreated)
 	fmt.Fprint(res, "success")
 }
