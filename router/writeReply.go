@@ -52,7 +52,7 @@ func WriteReply(res http.ResponseWriter, req *http.Request) {
 		return
 	}
 
-	_, err = db.Exec("UPDATE post SET replyCount=replyCount+1 WHERE postId=?", body.PostId)
+	_, err = db.Exec("UPDATE post SET replyCount=replyCount+1 WHERE id=?", body.PostId)
 	if err != nil {
 		res.WriteHeader(400)
 		fmt.Println("error during inserting")
