@@ -36,6 +36,7 @@ func main() {
 
 	//good!
 	app.HandleFunc("/add-good/{id}", router.AddGood).Methods("POST")
+	app.HandleFunc("/delete-good/{id}", router.DeleteGood).Methods("POST")
 	app.HandleFunc("/good/{id}", router.GetGood).Methods("POST")
 
 	http.ListenAndServeTLS(":8080", "certificate.crt", "private.key", app)
