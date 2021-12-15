@@ -52,14 +52,14 @@ func DeleteGood(res http.ResponseWriter, req *http.Request) {
 
 	//insert good info
 	db := conn.DB
-	_, err = db.Exec("DELETE good WHERE postId=? AND userId=?", postId, userId)
+	_, err = db.Exec("DELETE FROM good WHERE postId=? AND userId=?", postId, userId)
 	if err != nil {
 		res.WriteHeader(http.StatusBadRequest)
 		fmt.Fprint(res, "error during inerting")
 		return
 	}
 
-	_, err = db.Exec("UPDATE FROM post SET good=good-1 WHERE postId=?", postId)
+	_, err = db.Exec("UPDATE post SET good=good-1 WHERE id=?", postId)
 	if err != nil {
 		res.WriteHeader(http.StatusBadRequest)
 		fmt.Fprint(res, "error during inerting")
