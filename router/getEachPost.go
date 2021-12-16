@@ -1,19 +1,16 @@
 package router
 
 import (
+	"2021skill/account"
 	"2021skill/conn"
 	"2021skill/structure"
-	"encoding/hex"
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
 	"net/http"
-	"os"
 	"strconv"
 	"time"
 
 	"github.com/gorilla/mux"
-	"github.com/lemon-mint/vbox"
 )
 
 type tocken struct {
@@ -32,12 +29,14 @@ func GetEachPost(res http.ResponseWriter, req *http.Request) {
 
 	//decode user info
 	if len(body.Tocken) > 1 {
-		file, _ := os.Open("config/accessKey.txt")
-		key, _ := ioutil.ReadAll(file)
+		var _err bool
+		userId, _err = account.DecodeTocken(body.Tocken)
 
-		auth := vbox.NewBlackBox(key)
-		tocken, _ := hex.DecodeString(body.Tocken)
-		userId, _ = auth.Open(tocken)
+		if _err {
+			res.WriteHeader(400)
+			fmt.Fprint(res, "error during decode tocken")
+			return
+		}
 	}
 
 	//get post's info

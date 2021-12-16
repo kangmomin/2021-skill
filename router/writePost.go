@@ -1,16 +1,12 @@
 package router
 
 import (
+	"2021skill/account"
 	"2021skill/conn"
-	"encoding/hex"
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
 	"net/http"
-	"os"
 	"strings"
-
-	"github.com/lemon-mint/vbox"
 )
 
 type writePostBody struct {
@@ -42,18 +38,9 @@ func WritePost(res http.ResponseWriter, req *http.Request) {
 		return
 	}
 
-	//get key form config folder
-	file, _ := os.Open("config/accessKey.txt")
-	key, _ := ioutil.ReadAll(file)
+	userId, _err := account.DecodeTocken(body.Tocken)
 
-	//decode userInfo
-	auth := vbox.NewBlackBox(key)
-	decodedTocken, _ := hex.DecodeString(body.Tocken)
-	userId, boolean := auth.Open(decodedTocken)
-
-	if err != nil || !boolean {
-		fmt.Println(req.Cookies())
-		fmt.Printf("error during decode tocken \n %s", err)
+	if _err {
 		res.WriteHeader(400)
 		fmt.Fprint(res, "error during decode tocken")
 		return

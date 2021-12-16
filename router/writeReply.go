@@ -1,16 +1,12 @@
 package router
 
 import (
+	"2021skill/account"
 	"2021skill/conn"
-	"encoding/hex"
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
 	"net/http"
-	"os"
 	"strings"
-
-	"github.com/lemon-mint/vbox"
 )
 
 type writeReplyBody struct {
@@ -29,17 +25,11 @@ func WriteReply(res http.ResponseWriter, req *http.Request) {
 		return
 	}
 
-	keyFile, _ := os.Open("config/accessKey.txt")
-	key, _ := ioutil.ReadAll(keyFile)
+	userId, _err := account.DecodeTocken(body.Tocken)
 
-	auth := vbox.NewBlackBox(key)
-	decodeTocken, err := hex.DecodeString(body.Tocken)
-
-	userId, _error := auth.Open(decodeTocken)
-	if !_error || err != nil {
-		fmt.Println(err)
-		res.WriteHeader(http.StatusForbidden)
-		fmt.Fprint(res, "tocken was brocken")
+	if _err {
+		res.WriteHeader(400)
+		fmt.Fprint(res, "error during decode tocken")
 		return
 	}
 
@@ -52,7 +42,7 @@ func WriteReply(res http.ResponseWriter, req *http.Request) {
 		return
 	}
 
-	_, err = db.Exec("UPDATE post SET replyCount=replyCount+1 WHERE id=?", body.PostId)
+	_, err := db.Exec("UPDATE post SET replyCount=replyCount+1 WHERE id=?", body.PostId)
 	if err != nil {
 		res.WriteHeader(400)
 		fmt.Println("error during inserting")

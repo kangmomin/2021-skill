@@ -1,16 +1,12 @@
 package router
 
 import (
+	"2021skill/account"
 	"2021skill/conn"
-	"encoding/hex"
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
 	"net/http"
-	"os"
 	"strconv"
-
-	"github.com/lemon-mint/vbox"
 )
 
 type deletePostBody struct {
@@ -34,17 +30,11 @@ func DeletePost(res http.ResponseWriter, req *http.Request) {
 		return
 	}
 
-	keyFile, _ := os.Open("config/accessKey.txt")
-	key, _ := ioutil.ReadAll(keyFile)
+	userId, _err := account.DecodeTocken(body.Tocken)
 
-	auth := vbox.NewBlackBox(key)
-	decodeTocken, err := hex.DecodeString(body.Tocken)
-
-	userId, _error := auth.Open(decodeTocken)
-	if !_error || err != nil {
-		fmt.Println(err)
-		res.WriteHeader(http.StatusForbidden)
-		fmt.Fprint(res, "tocken was brocken")
+	if _err {
+		res.WriteHeader(400)
+		fmt.Fprint(res, "error during decode tocken")
 		return
 	}
 
@@ -59,7 +49,7 @@ func DeletePost(res http.ResponseWriter, req *http.Request) {
 		return
 	}
 
-	_, err = db.Exec("DELETE FROM post WHERE id=?", postId[0])
+	_, err := db.Exec("DELETE FROM post WHERE id=?", postId[0])
 	if err != nil {
 		res.WriteHeader(400)
 		fmt.Fprint(res, "error during deleting")

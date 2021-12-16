@@ -1,16 +1,13 @@
 package router
 
 import (
+	"2021skill/account"
 	"2021skill/conn"
-	"encoding/hex"
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
 	"net/http"
-	"os"
 
 	"github.com/gorilla/mux"
-	"github.com/lemon-mint/vbox"
 )
 
 type addGoodBody struct {
@@ -27,18 +24,11 @@ func AddGood(res http.ResponseWriter, req *http.Request) {
 		return
 	}
 
-	//decode tocken
-	keyFile, _ := os.Open("config/accessKey.txt")
-	key, _ := ioutil.ReadAll(keyFile)
+	userId, _err := account.DecodeTocken(body.Tocken)
 
-	auth := vbox.NewBlackBox(key)                      //aes key
-	decodeTocken, err := hex.DecodeString(body.Tocken) //tocken first decode
-
-	userId, _error := auth.Open(decodeTocken)
-	if !_error || err != nil {
-		fmt.Println(err)
-		res.WriteHeader(http.StatusForbidden)
-		fmt.Fprint(res, "tocken was brocken")
+	if _err {
+		res.WriteHeader(400)
+		fmt.Fprint(res, "error during decode tocken")
 		return
 	}
 
@@ -52,7 +42,7 @@ func AddGood(res http.ResponseWriter, req *http.Request) {
 
 	//insert good info
 	db := conn.DB
-	_, err = db.Exec("INSERT INTO good (postId, userId) VALUES (?, ?)", postId, userId)
+	_, err := db.Exec("INSERT INTO good (postId, userId) VALUES (?, ?)", postId, userId)
 	if err != nil {
 		res.WriteHeader(http.StatusBadRequest)
 		fmt.Fprint(res, "error during inerting")
