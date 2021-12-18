@@ -39,7 +39,7 @@ func GetAuthImg(res http.ResponseWriter, req *http.Request) {
 		return
 	}
 
-	img, err := os.Open("public/" + userAuthImg)
+	img, err := os.Open("auth/" + userAuthImg)
 
 	if err != nil {
 		fmt.Printf("error getAuthImg.go - 52 \n %s \n", err)

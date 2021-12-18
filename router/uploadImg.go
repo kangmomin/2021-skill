@@ -42,7 +42,7 @@ func UploadImg(res http.ResponseWriter, req *http.Request) {
 	imgName = strings.ReplaceAll(imgName, ":", "") //img이름 설정시 생기는 공백 제거
 
 	//파일 업로드
-	err = ioutil.WriteFile("public/"+imgName, encodedImg, 0644)
+	err = ioutil.WriteFile("auth/"+imgName, encodedImg, 0644)
 
 	if err != nil {
 		fmt.Println(err)
