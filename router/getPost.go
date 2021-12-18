@@ -50,9 +50,14 @@ func GetPost(res http.ResponseWriter, req *http.Request) {
 		sortType = sort[0] + " DESC"
 	}
 
-	//30개의 값을 꺼내옴
-	query := "SELECT * FROM post ORDER BY " + sortType + " LIMIT " + strconv.Itoa(page) + ", " + strconv.Itoa(eachPostConunt) + ";"
-	post, err := db.Query(query)
+	keyWord := ""
+	if len(req.URL.Query()["search"]) > 0 {
+		keyWord = req.URL.Query()["search"][0]
+	}
+
+	//30개의 값을 꺼내옴, colum에 맞는 정렬, 서칭
+	query := "SELECT * FROM post WHERE title LIKE '%" + keyWord + "%' ORDER BY ? LIMIT ?, ?;"
+	post, err := db.Query(query, sortType, strconv.Itoa(page), strconv.Itoa(eachPostConunt))
 
 	var posts resJson //result 변수
 
