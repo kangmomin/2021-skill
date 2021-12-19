@@ -35,8 +35,8 @@ func GetPost(res http.ResponseWriter, req *http.Request) {
 
 	//query pages info set
 	posts.NowPage = page
-	page = (page - 1) * 30 //each page's count
-	eachPostConunt := 30
+	page = (page - 1) * 20 //each page's count
+	eachPostConunt := 20
 
 	//만약 queryString에 page값이 없으면 page를 0으로 셋
 	if err != nil {
@@ -46,7 +46,7 @@ func GetPost(res http.ResponseWriter, req *http.Request) {
 	sort := req.URL.Query()["sort"]
 	var sortType string
 
-	if len(sort) < 1 || sort[0] == "id" || len(sort[0]) < 1 { //만약 sort type이 없으면 기본으로 넘기고 id값이면 오름차, 그외의 값은 내림차순 정렬
+	if len(sort) < 1 || len(sort[0]) < 1 { //만약 sort type이 없으면 기본으로 넘기고 id값이면 오름차, 그외의 값은 내림차순 정렬
 		sortType = "id DESC"
 	} else {
 		sortType = sort[0] + " DESC"
