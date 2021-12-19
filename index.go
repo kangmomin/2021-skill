@@ -12,7 +12,6 @@ func main() {
 	app := mux.NewRouter()
 
 	app.Use(router.SetHeader)
-	app.PathPrefix("/public/").Handler(http.FileServer(http.Dir("./public/")))
 
 	//post
 	app.HandleFunc("/post", router.GetPost).Methods("GET")
@@ -39,6 +38,8 @@ func main() {
 	app.HandleFunc("/add-good/{id}", router.AddGood).Methods("POST")
 	app.HandleFunc("/delete-good/{id}", router.DeleteGood).Methods("POST")
 	app.HandleFunc("/good/{id}", router.GetGood).Methods("POST")
+
+	app.PathPrefix("/public/").Handler(http.StripPrefix("/public/", http.FileServer(http.Dir("./public/"))))
 
 	http.ListenAndServeTLS(":8080", "certificate.crt", "private.key", app)
 }
