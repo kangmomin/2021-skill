@@ -27,12 +27,14 @@ func getPage(req *http.Request) (page string) {
 }
 
 func GetPost(res http.ResponseWriter, req *http.Request) {
+	var posts resJson //result 변수
 	db := conn.DB
 
 	pageString := getPage(req)
 	page, err := strconv.Atoi(pageString)
 
 	//query pages info set
+	posts.NowPage = page
 	page = (page - 1) * 30 //each page's count
 	eachPostConunt := 30
 
@@ -44,8 +46,8 @@ func GetPost(res http.ResponseWriter, req *http.Request) {
 	sort := req.URL.Query()["sort"]
 	var sortType string
 
-	if len(sort) < 1 || sort[0] == "id" { //만약 sort type이 없으면 기본으로 넘기고 id값이면 오름차, 그외의 값은 내림차순 정렬
-		sortType = "id"
+	if len(sort) < 1 || sort[0] == "id" || len(sort[0]) < 1 { //만약 sort type이 없으면 기본으로 넘기고 id값이면 오름차, 그외의 값은 내림차순 정렬
+		sortType = "id DESC"
 	} else {
 		sortType = sort[0] + " DESC"
 	}
@@ -56,21 +58,18 @@ func GetPost(res http.ResponseWriter, req *http.Request) {
 	}
 
 	//30개의 값을 꺼내옴, colum에 맞는 정렬, 서칭
-	query := "SELECT * FROM `post` WHERE title LIKE '%" + keyWord + "%' ORDER BY ? LIMIT ?, ?;"
-	post, err := db.Query(query, sortType, strconv.Itoa(page), strconv.Itoa(eachPostConunt))
-
-	var posts resJson //result 변수
+	query := "SELECT * FROM `post` WHERE title LIKE '%" + keyWord + "%' ORDER BY " + sortType + " LIMIT ?, ?;"
+	post, err := db.Query(query, strconv.Itoa(page), strconv.Itoa(eachPostConunt))
 
 	//조건에 맞는 패이지의 수
 	var allPosts, lastPage int
-	db.QueryRow("SELECT COUNT(*) FROM post;").Scan(&allPosts)
+	db.QueryRow("SELECT COUNT(*) FROM post WHERE title LIKE '%" + keyWord + "%';").Scan(&allPosts)
 
 	lastPage = allPosts / eachPostConunt
 	if (allPosts % eachPostConunt) != 0 {
 		lastPage++
 	}
 	posts.LastPage = lastPage
-	posts.NowPage = page + 1 //query문을 위해 -1을 했지만 현재 패이지를 표시하기위해 +1
 
 	if err != nil {
 		fmt.Print(err)
