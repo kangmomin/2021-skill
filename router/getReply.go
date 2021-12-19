@@ -20,7 +20,7 @@ func GetReply(res http.ResponseWriter, req *http.Request) {
 
 	db := conn.DB
 
-	reply, err := db.Query("SELECT * FROM reply WHERE postId=?", postId)
+	reply, err := db.Query("SELECT * FROM reply WHERE postId=? ORDER BY id DESC", postId)
 	if err != nil {
 		res.WriteHeader(http.StatusBadRequest)
 		fmt.Fprint(res, "error during get reply data")
