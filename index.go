@@ -12,6 +12,7 @@ func main() {
 	app := mux.NewRouter()
 
 	app.Use(router.SetHeader)
+	app.PathPrefix("/public/").Handler(http.FileServer(http.Dir("./public/")))
 
 	//post
 	app.HandleFunc("/post", router.GetPost).Methods("GET")
