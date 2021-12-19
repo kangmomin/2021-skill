@@ -4,7 +4,7 @@
     ```
     method: GET
     link: /post
-    query: page int, sort string
+    query: page int, sort string, search string
     
     return = errorMessage string || [{
         id          int
