@@ -28,7 +28,8 @@ func main() {
 	app.HandleFunc("/overlap-check/student-id", account.StuendtIdOverLap).Methods("POST")
 
 	//image upload
-	app.HandleFunc("/auth-image", router.UploadAuthImg).Methods("POST")
+	app.HandleFunc("/auth-image", router.ImageUploader).Methods("POST")
+	app.HandleFunc("/image", router.ImageUploader).Methods("POST")
 
 	//reply
 	app.HandleFunc("/reply/{id}", router.GetReply).Methods("GET")
