@@ -277,7 +277,7 @@ func WritePost(res http.ResponseWriter, req *http.Request) {
 
 	//insert post
 	db := conn.DB
-	body.Description = strings.ReplaceAll(body.Description, "script", "")
+	body.Description = strings.ReplaceAll(body.Description, "script", "&lt;script&gt;") //escape script
 	_, err = db.Exec("INSERT INTO post (title, description, ownerId) VALUES (?, ?, ?)", body.Title, body.Description, userId)
 
 	if err != nil {
