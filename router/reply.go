@@ -7,7 +7,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
-	"strings"
 
 	"github.com/gorilla/mux"
 )
@@ -16,7 +15,8 @@ import (
 type writeReplyBody struct {
 	Tocken      string `json:"tocken"`
 	Description string `json:"description"`
-	PostId      string `json:"postId"`
+	PostId      int    `json:"postId"`
+	RefReplyId  int    `json:"refReplyId"`
 }
 
 func GetReply(res http.ResponseWriter, req *http.Request) {
@@ -88,7 +88,6 @@ func WriteReply(res http.ResponseWriter, req *http.Request) {
 
 	db := conn.DB
 
-	body.Description = strings.ReplaceAll(body.Description, "script", "")
 	if len(body.Description) < 1 {
 		res.WriteHeader(http.StatusBadRequest)
 		fmt.Fprint(res, "description is null")
