@@ -100,8 +100,9 @@ func WriteReply(res http.ResponseWriter, req *http.Request) {
 		fmt.Println("error during inserting")
 		return
 	}
+	_, err = db.Exec("INSERT INTO reply (ownerId, description, postId, refReplyId) VALUES (?, ?, ?, ?)",
+		userId, body.Description, body.PostId, body.RefReplyId)
 
-	_, err = db.Exec("INSERT INTO reply (ownerId, description, postId) VALUES (?, ?, ?)", userId, body.Description, body.PostId)
 	if err != nil {
 		res.WriteHeader(400)
 		fmt.Println("error during inserting")
