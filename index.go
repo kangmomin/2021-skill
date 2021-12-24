@@ -3,8 +3,10 @@ package main
 import (
 	"2021skill/account"
 	"2021skill/router"
+	"fmt"
 	"net/http"
 
+	"github.com/caddyserver/certmagic"
 	"github.com/gorilla/mux"
 )
 
@@ -42,5 +44,8 @@ func main() {
 
 	app.PathPrefix("/public/").Handler(http.StripPrefix("/public/", http.FileServer(http.Dir("./public/"))))
 
-	http.ListenAndServeTLS(":8080", "certificate.crt", "private.key", app)
+	err := certmagic.HTTPS([]string{"koldin.myddns.me"}, app)
+	if err != nil {
+		fmt.Println(err)
+	}
 }
