@@ -25,6 +25,10 @@ func main() {
 	app.HandleFunc("/sign-up", account.SignUp).Methods("POST")
 	app.HandleFunc("/login", account.Login).Methods("POST")
 
+	//account accept
+	app.HandleFunc("/user-accept", account.Accept).Methods("POST")
+	app.HandleFunc("/user-root-info", account.GetAccountList).Methods("POST")
+
 	//account overlap checker
 	app.HandleFunc("/overlap-check/id", account.IdOverLap).Methods("POST")
 	app.HandleFunc("/overlap-check/student-id", account.StuendtIdOverLap).Methods("POST")
