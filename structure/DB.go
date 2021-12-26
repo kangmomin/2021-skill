@@ -13,6 +13,5 @@ type DB struct {
 	Time        time.Time `json:"time"`
 	Created     string    `json:"created"`
 	OwnerId     int       `json:"ownerId"`
-	AuthImg     string    `json:"authImg"`
 	IsOwner     bool      `json:"isOwner"`
 }
