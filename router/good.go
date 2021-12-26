@@ -15,12 +15,15 @@ type getGoodRes struct {
 }
 
 func GetGood(res http.ResponseWriter, req *http.Request) {
+	var resValue getGoodRes
 	var body tocken
 	json.NewDecoder(req.Body).Decode(&body)
 
 	if len(body.Tocken) < 1 {
-		res.WriteHeader(http.StatusForbidden)
-		fmt.Fprint(res, "need login")
+		resValue.IsGood = 0
+		resJson, _ := json.Marshal(resValue)
+		res.WriteHeader(http.StatusOK)
+		fmt.Fprint(res, string(resJson))
 		return
 	}
 
@@ -41,7 +44,6 @@ func GetGood(res http.ResponseWriter, req *http.Request) {
 	}
 
 	db := conn.DB
-	var resValue getGoodRes
 	err := db.QueryRow("SELECT COUNT(*) FROM good WHERE userId=? AND postId=?", userId, postId).Scan(&resValue.IsGood)
 	if err != nil {
 		res.WriteHeader(http.StatusBadRequest)
