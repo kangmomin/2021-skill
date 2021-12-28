@@ -35,6 +35,7 @@ func main() {
 
 	//image upload
 	app.HandleFunc("/auth-image", router.ImageUploader).Methods("POST")
+	app.HandleFunc("/get-auth-image", router.GetAuthImg).Methods("POST")
 	app.HandleFunc("/image", router.ImageUploader).Methods("POST")
 
 	//reply
