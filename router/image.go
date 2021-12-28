@@ -2,7 +2,6 @@ package router
 
 import (
 	"2021skill/account"
-	"2021skill/conn"
 	"encoding/json"
 	"fmt"
 	"io"
@@ -14,8 +13,8 @@ import (
 )
 
 type getAuthImgBody struct {
-	ImgPath string
-	Tocken  string
+	ImgPath string `json:"imgPath"`
+	Tocken  string `json:"tocken"`
 }
 
 type resValue struct {
@@ -89,21 +88,16 @@ func GetAuthImg(res http.ResponseWriter, req *http.Request) {
 		return
 	}
 
-	db := conn.DB
-	var userAuthImg string
-
-	err := db.QueryRow("SELECT authImg FROM account WHERE id=?", userId).Scan(&userAuthImg)
-
-	if err != nil {
-		fmt.Printf("error getAuthImg.go - 45 \n %s \n", err)
-		fmt.Fprint(res, "error during get user's auth img src")
+	if string(userId) != "33" {
+		res.WriteHeader(http.StatusUnauthorized)
+		fmt.Fprint(res, "not admin")
 		return
 	}
 
-	img, err := os.Open("authImg/" + userAuthImg)
+	img, err := os.Open("authImg/" + body.ImgPath)
 
 	if err != nil {
-		fmt.Printf("error getAuthImg.go - 52 \n %s \n", err)
+		fmt.Printf("error getAuthImg.go \n %s \n", err)
 		fmt.Fprint(res, "error open img")
 		return
 	}
