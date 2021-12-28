@@ -52,7 +52,7 @@ func ImageUploader(res http.ResponseWriter, req *http.Request) {
 	fileType := "public/"
 
 	if req.URL.Path == "/auth-image" {
-		fileType = "auth"
+		fileType = "auth/"
 	}
 
 	err = ioutil.WriteFile(fileType+imgName, encodedImg, 0644)
