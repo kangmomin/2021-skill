@@ -179,7 +179,7 @@ func GetPost(res http.ResponseWriter, req *http.Request) {
 	sort := req.URL.Query()["sort"]
 	var sortType string
 
-	if len(sort) < 1 || len(sort[0]) < 1 { //만약 sort type이 없으면 기본으로 넘기고 id값이면 오름차, 그외의 값은 내림차순 정렬
+	if len(sort) < 1 || len(sort[0]) < 1 || sort[0] == "insert" { //만약 sort type이 없으면 기본으로 넘기고 id값이면 오름차, 그외의 값은 내림차순 정렬
 		sortType = "id DESC"
 	} else {
 		sortType = sort[0] + " DESC"
