@@ -9,8 +9,8 @@ import (
 )
 
 type body struct {
-	Tocken string
-	UserId int
+	Tocken string `json:"tocken"`
+	UserId int    `json:"userId"`
 }
 
 func Accept(res http.ResponseWriter, req *http.Request) {
