@@ -2,6 +2,7 @@ package account
 
 import (
 	"2021skill/conn"
+	"2021skill/logger"
 	"encoding/json"
 	"fmt"
 	"net/http"
@@ -17,12 +18,14 @@ func Accept(res http.ResponseWriter, req *http.Request) {
 	var body body
 	err := json.NewDecoder(req.Body).Decode(&body)
 	if err != nil {
+		logger.ErrLogger().Fatalln(err)
 		res.WriteHeader(http.StatusMethodNotAllowed)
 		fmt.Fprint(res, "not allowed method")
 		return
 	}
 	userId, _err := DecodeTocken(body.Tocken)
 	if _err {
+		logger.ErrLogger().Fatalln(_err)
 		res.WriteHeader(http.StatusMethodNotAllowed)
 		fmt.Fprint(res, "not allowed method")
 		return
@@ -38,6 +41,7 @@ func Accept(res http.ResponseWriter, req *http.Request) {
 	_, err = db.Exec("UPDATE account SET accept=1 WHERE id=?", body.UserId)
 
 	if err != nil {
+		logger.ErrLogger().Fatalln(err)
 		res.WriteHeader(http.StatusBadRequest)
 		fmt.Fprint(res, "error during update")
 		return

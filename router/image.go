@@ -2,6 +2,7 @@ package router
 
 import (
 	"2021skill/account"
+	"2021skill/logger"
 	"encoding/json"
 	"fmt"
 	"io"
@@ -33,7 +34,7 @@ func ImageUploader(res http.ResponseWriter, req *http.Request) {
 		resValue.Err = true
 		resValue.Message = "error during get image data"
 
-		fmt.Println(err)
+		logger.ErrLogger().Fatalln(err)
 		res.WriteHeader(400)
 		fmt.Fprint(res, "error during get image data")
 		return
@@ -57,10 +58,10 @@ func ImageUploader(res http.ResponseWriter, req *http.Request) {
 	err = ioutil.WriteFile(fileType+imgName, encodedImg, 0644)
 
 	if err != nil {
-		fmt.Println(err)
 		resValue.Message = "cannot uplaod the img"
 		resValue.Err = true
 
+		logger.ErrLogger().Fatalln(err)
 		res.WriteHeader(400)
 		fmt.Fprint(res, resValue)
 		return
@@ -83,6 +84,7 @@ func GetAuthImg(res http.ResponseWriter, req *http.Request) {
 	userId, _err := account.DecodeTocken(body.Tocken)
 
 	if _err {
+		logger.ErrLogger().Fatalln(_err)
 		res.WriteHeader(400)
 		fmt.Fprint(res, "error during decode tocken")
 		return
@@ -97,7 +99,7 @@ func GetAuthImg(res http.ResponseWriter, req *http.Request) {
 	img, err := os.Open("authImg/" + body.ImgPath)
 
 	if err != nil {
-		fmt.Printf("error getAuthImg.go \n %s \n", err)
+		logger.ErrLogger().Fatalln(err)
 		fmt.Fprint(res, "error open img")
 		return
 	}

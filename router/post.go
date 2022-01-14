@@ -3,13 +3,14 @@ package router
 import (
 	"2021skill/account"
 	"2021skill/conn"
+	"2021skill/logger"
 	"2021skill/structure"
+
 	"encoding/json"
 	"fmt"
 	"net/http"
 	"strconv"
 	"strings"
-	"time"
 
 	"github.com/gorilla/mux"
 )
@@ -49,6 +50,7 @@ func GetEachPost(res http.ResponseWriter, req *http.Request) {
 		userId, _err = account.DecodeTocken(body.Tocken)
 
 		if _err {
+			logger.ErrLogger().Fatalln(_err)
 			res.WriteHeader(400)
 			fmt.Fprint(res, "error during decode tocken")
 			return
@@ -58,6 +60,7 @@ func GetEachPost(res http.ResponseWriter, req *http.Request) {
 	//get post's info
 	err := db.QueryRow("SELECT * FROM post WHERE id=?", postId).Scan(&post.Id, &post.Title, &post.Description, &post.Good, &post.Bad, &post.ReplyCount, &post.View, &post.Time, &post.OwnerId)
 	if err != nil {
+		logger.ErrLogger().Fatalln(err)
 		res.WriteHeader(http.StatusBadRequest)
 		fmt.Fprint(res, "error during get post's info")
 		return
@@ -72,14 +75,14 @@ func GetEachPost(res http.ResponseWriter, req *http.Request) {
 	post.Created = post.Time.Format("06-01-02 15:04")
 	byteDB, err := json.Marshal(&post)
 	if err != nil {
-		panic(err.Error())
+		logger.ErrLogger().Fatalln(err)
 	}
 
 	//view count update
 	_, err = db.Exec("UPDATE post SET view=? WHERE id=?", post.View+1, post.Id)
 
 	if err != nil {
-		fmt.Print(time.Now())
+		logger.ErrLogger().Fatalln(err)
 		fmt.Println(err)
 	}
 
@@ -107,6 +110,7 @@ func DeletePost(res http.ResponseWriter, req *http.Request) {
 	userId, _err := account.DecodeTocken(body.Tocken)
 
 	if _err {
+		logger.ErrLogger().Fatalln(_err)
 		res.WriteHeader(400)
 		fmt.Fprint(res, "error during decode tocken")
 		return
@@ -125,6 +129,7 @@ func DeletePost(res http.ResponseWriter, req *http.Request) {
 
 	_, err := db.Exec("DELETE FROM post WHERE id=?", postId[0])
 	if err != nil {
+		logger.ErrLogger().Fatalln(err)
 		res.WriteHeader(400)
 		fmt.Fprint(res, "error during deleting")
 		return
@@ -132,6 +137,7 @@ func DeletePost(res http.ResponseWriter, req *http.Request) {
 
 	_, err = db.Exec("DELETE FROM reply WHERE postId=?", postId[0])
 	if err != nil {
+		logger.ErrLogger().Fatalln(err)
 		res.WriteHeader(400)
 		fmt.Fprint(res, "error during deleting")
 		return
@@ -139,6 +145,7 @@ func DeletePost(res http.ResponseWriter, req *http.Request) {
 
 	_, err = db.Exec("DELETE FROM good WHERE postId=?", postId[0])
 	if err != nil {
+		logger.ErrLogger().Fatalln(err)
 		res.WriteHeader(400)
 		fmt.Fprint(res, "error during deleting")
 		return
@@ -205,7 +212,7 @@ func GetPost(res http.ResponseWriter, req *http.Request) {
 	posts.LastPage = lastPage
 
 	if err != nil {
-		fmt.Print(err)
+		logger.ErrLogger().Fatalln(err)
 		res.WriteHeader(500)
 		fmt.Fprint(res, "error during get from db")
 		return
@@ -216,7 +223,7 @@ func GetPost(res http.ResponseWriter, req *http.Request) {
 		var row structure.DB
 		err := post.Scan(&row.Id, &row.Title, &row.Description, &row.Good, &row.Bad, &row.ReplyCount, &row.View, &row.Time, &row.OwnerId)
 		if err != nil {
-			fmt.Println(err)
+			logger.ErrLogger().Fatalln(err)
 			return
 		}
 		row.Created = row.Time.Format("06-01-02 15:04")
@@ -234,7 +241,7 @@ func GetPost(res http.ResponseWriter, req *http.Request) {
 	postJson, err := json.Marshal(posts)
 	if err != nil {
 		fmt.Println("error during json marshaling")
-		fmt.Println(err)
+		logger.ErrLogger().Fatalln(err)
 		res.WriteHeader(400)
 		fmt.Fprint(res, "error during json marshaling")
 		return
@@ -250,7 +257,7 @@ func WritePost(res http.ResponseWriter, req *http.Request) {
 	err := json.NewDecoder(req.Body).Decode(&body)
 
 	if err != nil {
-		fmt.Println(err)
+		logger.ErrLogger().Fatalln(err)
 	}
 
 	//if body don't have tocken == user wasn't login
@@ -270,6 +277,7 @@ func WritePost(res http.ResponseWriter, req *http.Request) {
 	userId, _err := account.DecodeTocken(body.Tocken)
 
 	if _err {
+		logger.ErrLogger().Fatalln(_err)
 		res.WriteHeader(400)
 		fmt.Fprint(res, "error during decode tocken")
 		return
@@ -281,7 +289,7 @@ func WritePost(res http.ResponseWriter, req *http.Request) {
 	_, err = db.Exec("INSERT INTO post (title, description, ownerId) VALUES (?, ?, ?)", body.Title, body.Description, userId)
 
 	if err != nil {
-		fmt.Printf("error during insert post \n %s", err)
+		logger.ErrLogger().Fatalln(err)
 		res.WriteHeader(400)
 		fmt.Fprint(res, "error during insert post")
 		return

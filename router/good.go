@@ -3,6 +3,7 @@ package router
 import (
 	"2021skill/account"
 	"2021skill/conn"
+	"2021skill/logger"
 	"encoding/json"
 	"fmt"
 	"net/http"
@@ -30,6 +31,7 @@ func GetGood(res http.ResponseWriter, req *http.Request) {
 	userId, _err := account.DecodeTocken(body.Tocken)
 
 	if _err {
+		logger.ErrLogger().Fatalln(_err)
 		res.WriteHeader(400)
 		fmt.Fprint(res, "error during decode tocken")
 		return
@@ -46,6 +48,7 @@ func GetGood(res http.ResponseWriter, req *http.Request) {
 	db := conn.DB
 	err := db.QueryRow("SELECT COUNT(*) FROM good WHERE userId=? AND postId=?", userId, postId).Scan(&resValue.IsGood)
 	if err != nil {
+		logger.ErrLogger().Fatalln(err)
 		res.WriteHeader(http.StatusBadRequest)
 		fmt.Fprint(res, "err during get data")
 		return
@@ -69,6 +72,7 @@ func AddGood(res http.ResponseWriter, req *http.Request) {
 	userId, _err := account.DecodeTocken(body.Tocken)
 
 	if _err {
+		logger.ErrLogger().Fatalln(_err)
 		res.WriteHeader(400)
 		fmt.Fprint(res, "error during decode tocken")
 		return
@@ -86,6 +90,7 @@ func AddGood(res http.ResponseWriter, req *http.Request) {
 	db := conn.DB
 	_, err := db.Exec("INSERT INTO good (postId, userId) VALUES (?, ?)", postId, userId)
 	if err != nil {
+		logger.ErrLogger().Fatalln(err)
 		res.WriteHeader(http.StatusBadRequest)
 		fmt.Fprint(res, "error during inerting")
 		return
@@ -93,6 +98,7 @@ func AddGood(res http.ResponseWriter, req *http.Request) {
 
 	_, err = db.Exec("UPDATE post SET good=good+1 WHERE id=?", postId)
 	if err != nil {
+		logger.ErrLogger().Fatalln(err)
 		res.WriteHeader(http.StatusBadRequest)
 		fmt.Fprint(res, "error during inerting")
 		return
@@ -115,6 +121,7 @@ func DeleteGood(res http.ResponseWriter, req *http.Request) {
 	userId, _err := account.DecodeTocken(body.Tocken)
 
 	if _err {
+		logger.ErrLogger().Fatalln(_err)
 		res.WriteHeader(400)
 		fmt.Fprint(res, "error during decode tocken")
 		return
@@ -132,6 +139,7 @@ func DeleteGood(res http.ResponseWriter, req *http.Request) {
 	db := conn.DB
 	_, err := db.Exec("DELETE FROM good WHERE postId=? AND userId=?", postId, userId)
 	if err != nil {
+		logger.ErrLogger().Fatalln(err)
 		res.WriteHeader(http.StatusBadRequest)
 		fmt.Fprint(res, "error during inerting")
 		return
@@ -139,6 +147,7 @@ func DeleteGood(res http.ResponseWriter, req *http.Request) {
 
 	_, err = db.Exec("UPDATE post SET good=good-1 WHERE id=?", postId)
 	if err != nil {
+		logger.ErrLogger().Fatalln(err)
 		res.WriteHeader(http.StatusBadRequest)
 		fmt.Fprint(res, "error during inerting")
 		return

@@ -2,6 +2,7 @@ package account
 
 import (
 	"2021skill/conn"
+	"2021skill/logger"
 	"encoding/json"
 	"fmt"
 	"net/http"
@@ -35,7 +36,7 @@ func IdOverLap(res http.ResponseWriter, req *http.Request) {
 
 	if err != nil { //가져온 값이 없더라도 넘어감.
 		if errString := err.Error(); errString != "sql: no rows in result set" {
-			panic(err)
+			logger.ErrLogger().Fatalln(err)
 		}
 	}
 
@@ -59,7 +60,7 @@ func StuendtIdOverLap(res http.ResponseWriter, req *http.Request) {
 	err := json.NewDecoder(req.Body).Decode(&body)
 
 	if err != nil {
-		panic(err)
+		logger.ErrLogger().Fatalln(err)
 	}
 
 	db := conn.DB
@@ -69,7 +70,7 @@ func StuendtIdOverLap(res http.ResponseWriter, req *http.Request) {
 
 	if err != nil { //가져온 값이 없더라도 넘어감.
 		if errString := err.Error(); errString != "sql: no rows in result set" {
-			panic(err)
+			logger.ErrLogger().Fatalln(err)
 		}
 	}
 

@@ -2,6 +2,7 @@ package account
 
 import (
 	"2021skill/conn"
+	"2021skill/logger"
 	"2021skill/structure"
 	"encoding/hex"
 	"encoding/json"
@@ -28,7 +29,7 @@ func SignUp(res http.ResponseWriter, req *http.Request) {
 	body := post{}
 	err := json.NewDecoder(req.Body).Decode(&body)
 	if err != nil {
-		fmt.Println(err)
+		logger.ErrLogger().Fatalln(err)
 		res.WriteHeader(http.StatusMethodNotAllowed)
 		fmt.Fprint(res, "error in body data")
 		return
@@ -47,7 +48,7 @@ func SignUp(res http.ResponseWriter, req *http.Request) {
 	if err != nil {
 		res.WriteHeader(500)
 		fmt.Fprint(res, "err during get data from db")
-		fmt.Print(err)
+		logger.ErrLogger().Fatalln(err)
 		return
 	}
 
@@ -64,7 +65,12 @@ func SignUp(res http.ResponseWriter, req *http.Request) {
 	}
 
 	//password encrypting
-	randomKey, _ := generateRandomBytes(structure.EncryptConfig.SaltLength) //salt
+	randomKey, err := generateRandomBytes(structure.EncryptConfig.SaltLength) //salt
+	if err != nil {
+		logger.ErrLogger().Fatalln(err)
+		fmt.Fprint(res, "error during generateRandomByte")
+		return
+	}
 	encryptedPwd := argon2.IDKey([]byte(body.Password), randomKey, structure.EncryptConfig.Iterations,
 		structure.EncryptConfig.Memory, structure.EncryptConfig.Parallelism, structure.EncryptConfig.KeyLength)
 	body.Password = hex.EncodeToString(encryptedPwd)
@@ -75,7 +81,7 @@ func SignUp(res http.ResponseWriter, req *http.Request) {
 	if err != nil {
 		res.WriteHeader(400)
 		fmt.Fprint(res, "error during inserting")
-		fmt.Print(err)
+		logger.ErrLogger().Fatalln(err)
 		return
 	}
 

@@ -2,6 +2,7 @@ package account
 
 import (
 	"2021skill/conn"
+	"2021skill/logger"
 	"2021skill/structure"
 	"encoding/json"
 	"fmt"
@@ -13,12 +14,14 @@ func GetAccountList(res http.ResponseWriter, req *http.Request) {
 	var body body
 	err := json.NewDecoder(req.Body).Decode(&body)
 	if err != nil {
+		logger.ErrLogger().Fatalln(err)
 		res.WriteHeader(http.StatusMethodNotAllowed)
 		fmt.Fprint(res, "not allowed method")
 		return
 	}
 	userId, _err := DecodeTocken(body.Tocken)
 	if _err {
+		logger.ErrLogger().Fatalln(_err)
 		res.WriteHeader(http.StatusMethodNotAllowed)
 		fmt.Fprint(res, "not allowed method")
 		return
@@ -32,6 +35,7 @@ func GetAccountList(res http.ResponseWriter, req *http.Request) {
 	db := conn.DB
 	rows, err := db.Query("SELECT id, name, accountId, studentId, authImg FROM account WHERE accept=0")
 	if err != nil {
+		logger.ErrLogger().Fatalln(err)
 		res.WriteHeader(http.StatusBadRequest)
 		fmt.Fprint(res, "error during get data")
 		return

@@ -3,6 +3,7 @@ package router
 import (
 	"2021skill/account"
 	"2021skill/conn"
+	"2021skill/logger"
 	"2021skill/structure"
 	"encoding/json"
 	"fmt"
@@ -31,6 +32,7 @@ func GetReply(res http.ResponseWriter, req *http.Request) {
 
 	reply, err := db.Query("SELECT * FROM reply WHERE postId=? AND refReplyId=0", postId)
 	if err != nil {
+		logger.ErrLogger().Fatalln(err)
 		res.WriteHeader(http.StatusBadRequest)
 		fmt.Fprint(res, "error during get reply data")
 		return
@@ -38,6 +40,7 @@ func GetReply(res http.ResponseWriter, req *http.Request) {
 
 	refReply, err := db.Query("SELECT * FROM reply WHERE postId=? AND refReplyId!=0 ORDER BY id", postId)
 	if err != nil {
+		logger.ErrLogger().Fatalln(err)
 		res.WriteHeader(http.StatusBadRequest)
 		fmt.Fprint(res, "error during get ref_reply data")
 		return
@@ -81,6 +84,7 @@ func WriteReply(res http.ResponseWriter, req *http.Request) {
 	userId, _err := account.DecodeTocken(body.Tocken)
 
 	if _err {
+		logger.ErrLogger().Fatalln(_err)
 		res.WriteHeader(400)
 		fmt.Fprint(res, "error during decode tocken")
 		return
@@ -96,6 +100,7 @@ func WriteReply(res http.ResponseWriter, req *http.Request) {
 
 	_, err := db.Exec("UPDATE post SET replyCount=replyCount+1 WHERE id=?", body.PostId)
 	if err != nil {
+		logger.ErrLogger().Fatalln(err)
 		res.WriteHeader(400)
 		fmt.Println("error during inserting")
 		return
@@ -104,6 +109,7 @@ func WriteReply(res http.ResponseWriter, req *http.Request) {
 		userId, body.Description, body.PostId, body.RefReplyId)
 
 	if err != nil {
+		logger.ErrLogger().Fatalln(err)
 		res.WriteHeader(400)
 		fmt.Println("error during inserting")
 		return
